@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -21,18 +23,25 @@ func main() {
 }
 
 func requestFloatValue(message string) float64 {
-	var value string
-	fmt.Print(message)
-	fmt.Scan(&value)
+	reader := bufio.NewReader(os.Stdin)
 
-	parsedValue, err := strconv.ParseFloat(value, 64)
+	for {
+		fmt.Print(message)
+		input, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error reading input:", err)
+			continue
+		}
 
-	if err != nil {
-		fmt.Println("Invalid value")
-		return requestFloatValue(message)
+		input = strings.TrimSpace(input)
+		value, err := strconv.ParseFloat(input, 64)
+		if err != nil || value <= 0 {
+			fmt.Println("Invalid value. Value must be a positive number.")
+			continue
+		}
+
+		return value
 	}
-
-	return parsedValue
 }
 
 func calculateFinancials(revenue, expenses, taxRate float64) (float64, float64, float64) {
@@ -44,15 +53,14 @@ func calculateFinancials(revenue, expenses, taxRate float64) (float64, float64, 
 }
 
 func writeResultsInFile(profit, ebt, ratio float64) {
-	file, err := os.Create("results.txt")
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	file.WriteString(fmt.Sprintf(`
+	resultString := fmt.Sprintf(`
 		Profit: %.2f
 		EBT: %.2f
 		Profit margin: %.2f
-	`, profit, ebt, ratio))
+	`, profit, ebt, ratio)
+
+	err := os.WriteFile("results.txt", []byte(resultString), 0644)
+	if err != nil {
+		panic(err)
+	}
 }

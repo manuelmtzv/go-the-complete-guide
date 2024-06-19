@@ -20,12 +20,7 @@ func main() {
 	account := Account{balance: savedBalance}
 
 	for {
-		action, err := requestAction()
-
-		if err != nil {
-			fmt.Println("Invalid action")
-			return
-		}
+		action := requestAction()
 
 		switch action {
 		case 1:
@@ -62,8 +57,8 @@ func writeBalanceToFile(balance float64) {
 	os.WriteFile("balance.txt", []byte(fmt.Sprintf("%f", balance)), 0644)
 }
 
-func requestAction() (int64, error) {
-	var action string
+func requestAction() int {
+	var action int
 	fmt.Println("\n1. Deposit")
 	fmt.Println("2. Withdraw")
 	fmt.Println("3. Check balance")
@@ -72,9 +67,7 @@ func requestAction() (int64, error) {
 	fmt.Print("Enter action: ")
 	fmt.Scan(&action)
 
-	parsedAction, err := strconv.ParseInt(action, 10, 64)
-
-	return parsedAction, err
+	return action
 }
 
 func (account *Account) deposit() {
