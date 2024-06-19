@@ -5,26 +5,16 @@ import (
 	"math"
 )
 
-func main() {
-	const inflationRate = 2.5
+const inflationRate = 2.5
 
+func main() {
 	investmentAmount := requestInputValue[float64]("Enter investment amount: ")
-	returnRate := requestInputValue[float64]("Enter the expected return rate (default: %.2f): ")
+	returnRate := requestInputValue[float64](fmt.Sprintf("Enter the expected return rate (default: %.2f): ", inflationRate))
 	years := requestInputValue[float64]("Enter the investment time (years): ")
 
-	fmt.Printf("Enter the expected return rate (default: %.2f): ", returnRate)
-	fmt.Scan(&returnRate)
+	futureValue, futureRealValue := calculateFutureValues(investmentAmount, returnRate, years)
 
-	fmt.Print("Enter the investment time (years): ")
-	fmt.Scan(&years)
-
-	futureValue := investmentAmount * math.Pow((1+returnRate/100), years)
-	futureRealValue := futureValue / math.Pow((1+inflationRate/100), years)
-
-	formattedFutureValue := fmt.Sprintf("Future value is %.2f\n", futureValue)
-	formattedFutureRealValue := fmt.Sprintf("Future real value is %.2f\n", futureRealValue)
-
-	fmt.Println(formattedFutureValue, formattedFutureRealValue)
+	printResults(futureValue, futureRealValue)
 }
 
 func requestInputValue[T any](message string) T {
@@ -32,4 +22,19 @@ func requestInputValue[T any](message string) T {
 	fmt.Print(message)
 	fmt.Scan(&value)
 	return value
+}
+
+func calculateFutureValues(investmentAmount, returnRate, years float64) (float64, float64) {
+	futureValue := investmentAmount * math.Pow((1+returnRate/100), years)
+	futureRealValue := futureValue / math.Pow((1+inflationRate/100), years)
+
+	return futureValue, futureRealValue
+}
+
+func printResults(futureValue, futureRealValue float64) {
+	formattedFutureValue := fmt.Sprintf("Future value is %.2f", futureValue)
+	formattedFutureRealValue := fmt.Sprintf("Future real value is %.2f", futureRealValue)
+
+	fmt.Println(formattedFutureValue)
+	fmt.Println(formattedFutureRealValue)
 }
