@@ -63,7 +63,7 @@ func writeBalanceToFile(balance float64) {
 }
 
 func requestAction() (int64, error) {
-	var action int
+	var action string
 	fmt.Println("\n1. Deposit")
 	fmt.Println("2. Withdraw")
 	fmt.Println("3. Check balance")
@@ -72,7 +72,7 @@ func requestAction() (int64, error) {
 	fmt.Print("Enter action: ")
 	fmt.Scan(&action)
 
-	parsedAction, err := strconv.ParseInt(fmt.Sprintf("%d", action), 10, 64)
+	parsedAction, err := strconv.ParseInt(action, 10, 64)
 
 	return parsedAction, err
 }
@@ -90,11 +90,11 @@ func (account *Account) deposit() {
 }
 
 func (account *Account) withdraw() {
-	var amount float64
+	var amount string
 	fmt.Print("Enter amount to withdraw: ")
 	fmt.Scan(&amount)
 
-	parsedAmount, err := strconv.ParseFloat(fmt.Sprintf("%.2f", amount), 64)
+	parsedAmount, err := strconv.ParseFloat(amount, 64)
 
 	if err != nil || parsedAmount <= 0 {
 		fmt.Println("Invalid amount")
