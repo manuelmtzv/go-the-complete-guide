@@ -5,6 +5,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/Pallinder/go-randomdata"
 )
 
 func RequestAction(min, max int) int {
@@ -12,6 +14,7 @@ func RequestAction(min, max int) int {
 
 	for {
 		println("\nWelcome! Choose an action:")
+		println(randomdata.SillyName())
 		println("1. Deposit")
 		println("2. Withdraw")
 		println("3. Check Balance")

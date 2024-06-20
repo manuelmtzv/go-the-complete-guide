@@ -1,15 +1,18 @@
 package main
 
 import (
+	"essentials/bank/utility"
 	"fmt"
 )
+
+const balanceFile = "balance.txt"
 
 type Account struct {
 	balance float64
 }
 
 func main() {
-	savedBalance, err := GetFloatFromFile("balance.txt")
+	savedBalance, err := utility.GetFloatFromFile(balanceFile)
 	if err != nil {
 		panic(err)
 	}
@@ -34,6 +37,6 @@ func main() {
 			return
 		}
 
-		WriteFloatToFile("balance.txt", float64(account.balance))
+		utility.WriteFloatToFile("balance.txt", float64(account.balance))
 	}
 }
