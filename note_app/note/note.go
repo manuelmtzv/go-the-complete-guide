@@ -1,11 +1,9 @@
 package note
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
-	"strings"
+	"note-app/utility"
 	"time"
 )
 
@@ -32,16 +30,13 @@ func (note *Note) Display() string {
 }
 
 func (note *Note) Save() error {
-	fileName := strings.ReplaceAll(note.Title, " ", "_") + ".json"
-	fileName = strings.ToLower(fileName)
+	fileName := utility.ComposeFileName(note.Title, ".json")
 
-	json, err := json.Marshal(note)
+	err := utility.SaveToJson(fileName, note)
 
 	if err != nil {
 		return err
 	}
-
-	os.WriteFile(fileName, json, 0644)
 
 	return nil
 }

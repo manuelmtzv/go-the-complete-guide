@@ -5,12 +5,17 @@ import (
 	"errors"
 	"fmt"
 	"note-app/note"
+	"note-app/todo"
+	"note-app/utility"
 	"os"
 	"strings"
 )
 
 func main() {
 	title, content := getNoteData()
+	todoText := getTodoData()
+
+	// Create a new note
 
 	note, err := note.New(title, content)
 
@@ -19,15 +24,38 @@ func main() {
 		return
 	}
 
-	fmt.Println("Note created successfully!")
-	fmt.Println(note.Display())
+	err = utility.OutputData(note)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	err = note.Save()
+	// Create a new todo
+
+	todo, err := todo.New(todoText)
 
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+
+	err = utility.OutputData(todo)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+}
+
+func getTodoData() string {
+	fmt.Println("Enter todo details.")
+	text, err := requestStringInput("Text: ")
+
+	if err != nil {
+		panic(err)
+	}
+
+	return text
 }
 
 func getNoteData() (string, string) {
