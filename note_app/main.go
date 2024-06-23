@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"note-app/note"
 	"os"
 	"strings"
 )
@@ -11,18 +12,33 @@ import (
 func main() {
 	title, content := getNoteData()
 
-	fmt.Println("Title:", title)
-	fmt.Println("Content:", content)
+	note, err := note.New(title, content)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println("Note created successfully!")
+	fmt.Println(note.Display())
+
+	err = note.Save()
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
 func getNoteData() (string, string) {
-	title, err := requestStringInput("Note title: ")
+	fmt.Println("Enter note details.")
+	title, err := requestStringInput("Title: ")
 
 	if err != nil {
 		panic(err)
 	}
 
-	content, err := requestStringInput("Note content: ")
+	content, err := requestStringInput("Content: ")
 
 	if err != nil {
 		panic(err)
