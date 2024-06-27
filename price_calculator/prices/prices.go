@@ -4,24 +4,26 @@ import (
 	"errors"
 	"fmt"
 	"price-calculator/conversion"
-	"price-calculator/filemanager"
+	"price-calculator/iomanager"
 )
 
 type TaxIncludedPriceJob struct {
-	TaxRate          float64
-	InputPrices      []float64
-	TaxIncludedTaxes map[string]float64
+	FileManager       iomanager.IOManager `json:"-"`
+	TaxRate           float64             `json:"taxRate"`
+	InputPrices       []float64           `json:"inputPrices"`
+	TaxIncludedPrices map[string]string   `json:"taxIncludedPrices"`
 }
 
-func NewTaxIncludedPriceJob(taxRate float64) *TaxIncludedPriceJob {
+func NewTaxIncludedPriceJob(taxRate float64, filemanager iomanager.IOManager) *TaxIncludedPriceJob {
 	return &TaxIncludedPriceJob{
 		TaxRate:     taxRate,
 		InputPrices: []float64{10, 20, 30},
+		FileManager: filemanager,
 	}
 }
 
 func (job *TaxIncludedPriceJob) LoadData() error {
-	lines, err := filemanager.ReadLines("prices.txt")
+	lines, err := job.FileManager.ReadLines()
 
 	if err != nil {
 		return errors.New("error reading file")
@@ -51,5 +53,13 @@ func (job *TaxIncludedPriceJob) Process() {
 		resultPrice := price * (1 + job.TaxRate)
 		result[fmt.Sprintf("%.2f", price)] = fmt.Sprintf("%.2f", resultPrice)
 	}
-	fmt.Println(result)
+
+	job.TaxIncludedPrices = result
+
+	err = job.FileManager.WriteJson(job)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
