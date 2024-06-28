@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -16,7 +15,6 @@ func InitDatabase() {
 	DB, err = sql.Open("pgx", connectionString)
 
 	if err != nil {
-		fmt.Println(err)
 		panic("could not connect DB.")
 	}
 
@@ -25,7 +23,6 @@ func InitDatabase() {
 
 	err = DB.Ping()
 	if err != nil {
-		fmt.Println(err)
 		panic("could not ping DB.")
 	}
 
@@ -33,9 +30,11 @@ func InitDatabase() {
 }
 
 func createTables() {
+	enableUUIDExtension()
+
 	createEventsTable := `
 	CREATE TABLE IF NOT EXISTS events (
-		id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+		id SERIAL PRIMARY KEY,
 		name TEXT NOT NULL,
 		description TEXT NOT NULL,
 		location TEXT NOT NULL,
@@ -47,7 +46,16 @@ func createTables() {
 	_, err := DB.Exec(createEventsTable)
 
 	if err != nil {
-		fmt.Println(err)
-		panic("could not create DB tables.")
+		panic(err)
+	}
+}
+
+func enableUUIDExtension() {
+	enableUuid := `CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`
+
+	_, err := DB.Exec(enableUuid)
+
+	if err != nil {
+		panic(err)
 	}
 }
