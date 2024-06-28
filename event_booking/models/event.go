@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"event-booking/database"
 	"time"
 )
@@ -68,4 +69,26 @@ func GetAllEvents() ([]Event, error) {
 	}
 
 	return events, nil
+}
+
+func GetEventById(id int64) (*Event, error) {
+	query := `
+		SELECT id, name, description, location, datetime, user_id
+		FROM events
+		WHERE id = $1
+	`
+
+	row := database.DB.QueryRow(query, id)
+
+	e := Event{}
+
+	err := row.Scan(&e.Id, &e.Name, &e.Description, &e.Location, &e.DateTime, &e.UserId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &e, nil
 }
