@@ -2,6 +2,7 @@ package utility
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"time"
 
@@ -18,7 +19,7 @@ func GenerateJWT(userId int64, email string) (string, error) {
 	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 }
 
-func VerifyJwt(token string) error {
+func VerifyJwt(token string) (int64, error) {
 	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 
@@ -30,21 +31,23 @@ func VerifyJwt(token string) error {
 	})
 
 	if err != nil {
-		return errors.New("could not parse token")
+		return 0, errors.New("could not parse token")
 	}
 
 	if !parsedToken.Valid {
-		return errors.New("invalid token")
+		return 0, errors.New("invalid token")
 	}
 
-	// claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
 
-	// if !ok {
-	// 	return errors.New("invalid token payload")
-	// }
+	if !ok {
+		return 0, errors.New("invalid token payload")
+	}
+
+	fmt.Println("Claims", claims)
 
 	// email, _ := claims["email"].(string)
-	// userId, _ := claims["userId"].(int64)
+	userId, _ := claims["userId"].(float64)
 
-	return nil
+	return int64(userId), nil
 }
