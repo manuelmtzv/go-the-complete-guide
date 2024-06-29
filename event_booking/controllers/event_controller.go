@@ -176,5 +176,5 @@ func DeleteEvent(context *gin.Context) {
 		return
 	}
 
-	context.Status(204)
+	context.Status(http.StatusNoContent)
 }

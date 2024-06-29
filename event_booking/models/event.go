@@ -15,12 +15,12 @@ type Event struct {
 	UserId      int
 }
 
-func (event *Event) Save() error {
+func (e *Event) Save() error {
 	query := `
 		INSERT INTO 
 		events(name, description, location, datetime, user_id) 
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING id
+		RETURNING id;
 	`
 	statement, err := database.DB.Prepare(query)
 
@@ -32,15 +32,15 @@ func (event *Event) Save() error {
 
 	var id int64
 
-	err = statement.QueryRow(event.Name, event.Description, event.Location, event.DateTime, event.UserId).Scan(&id)
+	err = statement.QueryRow(e.Name, e.Description, e.Location, e.DateTime, e.UserId).Scan(&id)
 
 	if err != nil {
 		return err
 	}
 
-	event.Id = id
+	e.Id = id
 
-	return err
+	return nil
 }
 
 func GetAllEvents() ([]Event, error) {

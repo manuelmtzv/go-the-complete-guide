@@ -12,6 +12,7 @@ func main() {
 	server := gin.Default()
 
 	routes.RegisterEventRoutes(server)
+	routes.RegisterUserRoutes(server)
 
 	server.Run(":3000")
 }

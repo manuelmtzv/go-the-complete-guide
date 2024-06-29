@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -30,32 +31,42 @@ func InitDatabase() {
 }
 
 func createTables() {
-	enableUUIDExtension()
+	createUsersTable()
+	createEventsTable()
+}
 
-	createEventsTable := `
+func createUsersTable() {
+	query := `
+	CREATE TABLE IF NOT EXISTS users (
+		id SERIAL PRIMARY KEY, 
+		email TEXT NOT NULL UNIQUE, 
+		password TEXT NOT NULL
+	);
+	`
+
+	createTable(query, "users")
+}
+
+func createEventsTable() {
+	query := `
 	CREATE TABLE IF NOT EXISTS events (
 		id SERIAL PRIMARY KEY,
 		name TEXT NOT NULL,
 		description TEXT NOT NULL,
 		location TEXT NOT NULL,
 		datetime TIMESTAMP,
-		user_id INTEGER
-	)
+		user_id INTEGER, 
+		FOREIGN KEY(user_id) REFERENCES users(id)
+	);
 	`
-
-	_, err := DB.Exec(createEventsTable)
-
-	if err != nil {
-		panic(err)
-	}
+	createTable(query, "events")
 }
 
-func enableUUIDExtension() {
-	enableUuid := `CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`
-
-	_, err := DB.Exec(enableUuid)
+func createTable(query string, tableName string) {
+	_, err := DB.Exec(query)
 
 	if err != nil {
+		fmt.Printf("Could not create %v table.\n", tableName)
 		panic(err)
 	}
 }
