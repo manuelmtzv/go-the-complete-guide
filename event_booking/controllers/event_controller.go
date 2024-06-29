@@ -50,7 +50,7 @@ func GetEventById(context *gin.Context) {
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
-			"message": "The provided Id must be a number",
+			"message": "The provided Id must be a number.	",
 		})
 		return
 	}
@@ -88,7 +88,7 @@ func CreateEvent(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusCreated, gin.H{
-		"message": "Event created",
+		"message": "Event created.",
 		"event":   event,
 	})
 }
@@ -98,7 +98,7 @@ func UpdateEvent(context *gin.Context) {
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
-			"message": "The provided Id must be a number",
+			"message": "The provided Id must be a number.",
 		})
 		return
 	}
@@ -112,7 +112,7 @@ func UpdateEvent(context *gin.Context) {
 	var updatedFields map[string]interface{}
 	if err := context.ShouldBindJSON(&updatedFields); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
-			"message": "Could not parse request data",
+			"message": "Could not parse request data.",
 		})
 		return
 	}
@@ -146,7 +146,35 @@ func UpdateEvent(context *gin.Context) {
 	}
 
 	context.JSON(http.StatusOK, gin.H{
-		"message": "Event updated",
+		"message": "Event updated.",
 		"event":   event,
 	})
+}
+
+func DeleteEvent(context *gin.Context) {
+	id, err := strconv.ParseInt(context.Param("id"), 10, 64)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "The provided Id must be a number.",
+		})
+		return
+	}
+
+	event := GetRawEventById(context, id)
+
+	if event == nil {
+		return
+	}
+
+	err = event.Delete()
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error while trying to delete event.",
+		})
+		return
+	}
+
+	context.Status(204)
 }
