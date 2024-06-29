@@ -2,6 +2,7 @@ package routes
 
 import (
 	"event-booking/controllers"
+	"event-booking/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,7 +10,11 @@ import (
 func RegisterEventRoutes(server *gin.Engine) {
 	server.GET("/events", controllers.GetEvents)
 	server.GET("/events/:id", controllers.GetEventById)
-	server.POST("/events", controllers.CreateEvent)
-	server.PATCH("/events/:id", controllers.UpdateEvent)
-	server.DELETE("/events/:id", controllers.DeleteEvent)
+
+	authenticated := server.Group("/")
+	authenticated.Use(middlewares.Authenticate)
+
+	authenticated.POST("/events", controllers.CreateEvent)
+	authenticated.PATCH("/events/:id", controllers.UpdateEvent)
+	authenticated.DELETE("/events/:id", controllers.DeleteEvent)
 }

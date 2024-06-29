@@ -2,11 +2,9 @@ package controllers
 
 import (
 	"event-booking/models"
-	"event-booking/utility"
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -63,31 +61,8 @@ func GetEventById(context *gin.Context) {
 }
 
 func CreateEvent(context *gin.Context) {
-	var token string
-	if bearerToken := strings.Split(context.Request.Header.Get("Authorization"), " ")[1:]; len(bearerToken) > 0 {
-		token = bearerToken[0]
-	}
-
-	if token == "" {
-		context.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Not authorized.",
-		})
-		return
-	}
-
-	userId, err := utility.VerifyJwt(token)
-
-	fmt.Println("User id", userId)
-
-	if err != nil {
-		context.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Invalid or expired token.",
-		})
-		return
-	}
-
 	var event models.Event
-	err = context.ShouldBindJSON(&event)
+	err := context.ShouldBindJSON(&event)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{
@@ -97,7 +72,7 @@ func CreateEvent(context *gin.Context) {
 		return
 	}
 
-	event.UserId = userId
+	event.UserId = context.GetInt64("userId")
 
 	err = event.Save()
 
