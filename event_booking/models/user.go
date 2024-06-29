@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"event-booking/database"
 	"event-booking/utility"
 	"fmt"
@@ -70,4 +71,16 @@ func (u *User) Save() error {
 	u.Id = id
 
 	return err
+}
+
+func (u *User) ValidateCredentials() (bool, error) {
+	foundUser, _ := GetUser(u.Email)
+
+	if foundUser == nil {
+		return false, errors.New("user with that email was not found")
+	}
+
+	u.Id = foundUser.Id
+
+	return utility.CompareWithHashedPassword(foundUser.Password, u.Password), nil
 }

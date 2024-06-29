@@ -1,6 +1,7 @@
 package main
 
 import (
+	"event-booking/config"
 	"event-booking/database"
 	"event-booking/routes"
 
@@ -8,6 +9,7 @@ import (
 )
 
 func main() {
+	config.LoadEnvVariables()
 	database.InitDatabase()
 	server := gin.Default()
 

@@ -8,4 +8,5 @@ import (
 
 func RegisterUserRoutes(server *gin.Engine) {
 	server.POST("/register", controllers.RegisterUser)
+	server.POST("/login", controllers.LoginUser)
 }
