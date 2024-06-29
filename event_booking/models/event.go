@@ -131,3 +131,7 @@ func (e *Event) Delete() error {
 
 	return err
 }
+
+func (e *Event) ValidateOwnership(userId int64) bool {
+	return userId == e.UserId
+}

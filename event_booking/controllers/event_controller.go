@@ -27,14 +27,14 @@ func FetchEvent(context *gin.Context, id int64) *models.Event {
 	event, err := models.GetEventById(id)
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{
+		context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"message": "Unable to retrieve the requested event.",
 		})
 		return nil
 	}
 
 	if event == nil {
-		context.JSON(http.StatusNotFound, gin.H{
+		context.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 			"message": fmt.Sprintf("Event with provided id (%v) was not found.", id),
 		})
 		return nil
@@ -91,6 +91,7 @@ func CreateEvent(context *gin.Context) {
 }
 
 func UpdateEvent(context *gin.Context) {
+	userId := context.GetInt64("userId")
 	id, err := strconv.ParseInt(context.Param("id"), 10, 64)
 
 	if err != nil {
@@ -103,6 +104,13 @@ func UpdateEvent(context *gin.Context) {
 	event := FetchEvent(context, id)
 
 	if event == nil {
+		return
+	}
+
+	if validOwnership := event.ValidateOwnership(userId); !validOwnership {
+		context.JSON(http.StatusForbidden, gin.H{
+			"message": "You are not authorized to update this event.",
+		})
 		return
 	}
 
@@ -149,6 +157,7 @@ func UpdateEvent(context *gin.Context) {
 }
 
 func DeleteEvent(context *gin.Context) {
+	userId := context.GetInt64("userId")
 	id, err := strconv.ParseInt(context.Param("id"), 10, 64)
 
 	if err != nil {
@@ -161,6 +170,13 @@ func DeleteEvent(context *gin.Context) {
 	event := FetchEvent(context, id)
 
 	if event == nil {
+		return
+	}
+
+	if validOwnership := event.ValidateOwnership(userId); !validOwnership {
+		context.JSON(http.StatusForbidden, gin.H{
+			"message": "You are not authorized to delete this event.",
+		})
 		return
 	}
 
