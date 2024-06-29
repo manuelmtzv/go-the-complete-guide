@@ -23,21 +23,19 @@ func GetEvents(context *gin.Context) {
 	context.JSON(http.StatusOK, events)
 }
 
-func GetRawEventById(context *gin.Context, id int64) *models.Event {
+func FetchEvent(context *gin.Context, id int64) *models.Event {
 	event, err := models.GetEventById(id)
 
 	if err != nil {
-		errMessage := "Unable to retrieve the event."
 		context.JSON(http.StatusInternalServerError, gin.H{
-			"message": errMessage,
+			"message": "Unable to retrieve the requested event.",
 		})
 		return nil
 	}
 
 	if event == nil {
-		errMessage := fmt.Sprintf("Event with provided id (%v) was not found.", id)
 		context.JSON(http.StatusNotFound, gin.H{
-			"message": errMessage,
+			"message": fmt.Sprintf("Event with provided id (%v) was not found.", id),
 		})
 		return nil
 	}
@@ -55,7 +53,7 @@ func GetEventById(context *gin.Context) {
 		return
 	}
 
-	if event := GetRawEventById(context, id); event != nil {
+	if event := FetchEvent(context, id); event != nil {
 		context.JSON(http.StatusOK, gin.H{
 			"event": event,
 		})
@@ -103,7 +101,7 @@ func UpdateEvent(context *gin.Context) {
 		return
 	}
 
-	event := GetRawEventById(context, id)
+	event := FetchEvent(context, id)
 
 	if event == nil {
 		return
@@ -161,7 +159,7 @@ func DeleteEvent(context *gin.Context) {
 		return
 	}
 
-	event := GetRawEventById(context, id)
+	event := FetchEvent(context, id)
 
 	if event == nil {
 		return

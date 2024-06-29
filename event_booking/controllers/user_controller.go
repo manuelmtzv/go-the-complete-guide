@@ -2,10 +2,29 @@ package controllers
 
 import (
 	"event-booking/models"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
+
+func FetchUser[T int64 | string](context *gin.Context, identifier T) *models.User {
+	user, err := models.GetUser(identifier)
+
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Unable to retrieve the requested user.",
+		})
+	}
+
+	if user == nil {
+		context.JSON(http.StatusNotFound, gin.H{
+			"message": fmt.Sprintf("User with provided identifier (%v) was not found", identifier),
+		})
+	}
+
+	return user
+}
 
 func RegisterUser(context *gin.Context) {
 	user := models.User{}
