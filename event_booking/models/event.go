@@ -136,6 +136,34 @@ func (e *Event) ValidateOwnership(userId int64) bool {
 	return userId == e.UserId
 }
 
+func (e *Event) CheckUserRegistration(userId int64) bool {
+	query := `
+		SELECT id
+		FROM registrations
+		WHERE event_id = $1 
+		AND user_id = $2
+	`
+
+	rows, err := database.DB.Query(query, e.Id, userId)
+
+	if err != nil {
+		return false
+	}
+
+	defer rows.Close()
+
+	count := 0
+	for rows.Next() {
+		count++
+	}
+
+	if err := rows.Err(); err != nil {
+		return false
+	}
+
+	return count > 0
+}
+
 func (e *Event) Register(userId int64) error {
 	query := `
 		INSERT INTO 

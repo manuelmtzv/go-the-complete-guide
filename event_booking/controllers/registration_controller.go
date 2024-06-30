@@ -24,6 +24,15 @@ func RegisterForEvent(context *gin.Context) {
 		return
 	}
 
+	previousRegistration := event.CheckUserRegistration(userId)
+
+	if previousRegistration {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "You are already registered for this event.",
+		})
+		return
+	}
+
 	err = event.Register(userId)
 
 	if err != nil {
