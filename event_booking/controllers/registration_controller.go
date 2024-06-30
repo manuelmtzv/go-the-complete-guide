@@ -82,7 +82,7 @@ func CancelEventRegistration(context *gin.Context) {
 		return
 	}
 
-	context.JSON(http.StatusNoContent, gin.H{
+	context.JSON(http.StatusOK, gin.H{
 		"message": "Your registration was successfully cancelled.",
 	})
 }
