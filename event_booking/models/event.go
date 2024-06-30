@@ -191,3 +191,24 @@ func (e *Event) Register(userId int64) error {
 
 	return nil
 }
+
+func (e *Event) CancelRegistration(userId int64) error {
+	query := `
+		DELETE FROM 
+		registrations
+		WHERE event_id = $1 
+		AND user_id = $2
+	`
+
+	statement, err := database.DB.Prepare(query)
+
+	if err != nil {
+		return err
+	}
+
+	defer statement.Close()
+
+	_, err = statement.Exec(e.Id, userId)
+
+	return err
+}

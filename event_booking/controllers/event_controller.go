@@ -68,7 +68,6 @@ func CreateEvent(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"message": "Could not parse request data",
 		})
-		fmt.Println(err)
 		return
 	}
 
@@ -77,7 +76,6 @@ func CreateEvent(context *gin.Context) {
 	err = event.Save()
 
 	if err != nil {
-		fmt.Println(err)
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Could not create the requested event.",
 		})
@@ -143,7 +141,6 @@ func UpdateEvent(context *gin.Context) {
 	}
 
 	if err := event.Update(); err != nil {
-		fmt.Println(err)
 		context.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Could not update the requested event.",
 		})

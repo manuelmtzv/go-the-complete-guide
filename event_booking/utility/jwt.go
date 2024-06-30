@@ -2,7 +2,6 @@ package utility
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"time"
 
@@ -43,8 +42,6 @@ func VerifyJwt(token string) (int64, error) {
 	if !ok {
 		return 0, errors.New("invalid token payload")
 	}
-
-	fmt.Println("Claims", claims)
 
 	// email, _ := claims["email"].(string)
 	userId, _ := claims["userId"].(float64)

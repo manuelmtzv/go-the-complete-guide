@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"event-booking/utility"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -15,8 +14,6 @@ func Authenticate(context *gin.Context) {
 		token = bearerToken[0]
 	}
 
-	fmt.Println(context.Request.Header.Get("Authorization"))
-
 	if token == "" {
 		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"message": "Not authorized.",
@@ -25,8 +22,6 @@ func Authenticate(context *gin.Context) {
 	}
 
 	userId, err := utility.VerifyJwt(token)
-
-	fmt.Println("User id", userId)
 
 	if err != nil {
 		context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
