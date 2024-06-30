@@ -135,3 +135,31 @@ func (e *Event) Delete() error {
 func (e *Event) ValidateOwnership(userId int64) bool {
 	return userId == e.UserId
 }
+
+func (e *Event) Register(userId int64) error {
+	query := `
+		INSERT INTO 
+		registrations(event_id, user_id)
+		VALUES ($1, $2)
+		RETURNING id;
+	`
+
+	statement, err := database.DB.Prepare(query)
+
+	if err != nil {
+		return err
+	}
+
+	defer statement.Close()
+
+	var id int64
+	err = statement.QueryRow(e.Id, userId).Scan(&id)
+
+	if err != nil {
+		return err
+	}
+
+	e.Id = id
+
+	return nil
+}

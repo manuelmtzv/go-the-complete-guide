@@ -13,8 +13,9 @@ func main() {
 	database.InitDatabase()
 	server := gin.Default()
 
-	routes.RegisterEventRoutes(server)
 	routes.RegisterUserRoutes(server)
+	routes.RegisterEventRoutes(server)
+	routes.RegisterRegistrationRoutes(server)
 
 	server.Run(":3000")
 }
